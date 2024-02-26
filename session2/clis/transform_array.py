@@ -2,8 +2,29 @@ import numpy as np
 import argparse as ap
 import os
 
+# Create subparser and arguments
+parser = ap.ArgumentParser()
+
+# create subparser
+subparser = parser.add_subparsers(dest='command', required=True)
+
+
+
+parser.add_argument('inpath', type=str, help='path of input file.')
+parser.add_argument('outpath', type=str, help='path of output file.')
+parser.add_argument('--transform', type=str, default = 'standardize', choices = ['standardize', 'normalize'], help='type of transformation.')
+args = parser.parse_args()
+
+
+
+
+
+
+
+
+# Previous:
 # Create parser and arguments
-parser = ap.ArgumentParser(description="Extract valid trials.")
+parser = ap.ArgumentParser()
 parser.add_argument('inpath', type=str, help='path of input file.')
 parser.add_argument('outpath', type=str, help='path of output file.')
 parser.add_argument('--transform', type=str, default = 'standardize', choices = ['standardize', 'normalize'], help='type of transformation.')
