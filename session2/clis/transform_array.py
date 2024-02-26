@@ -6,7 +6,7 @@ import os
 parser = ap.ArgumentParser(description="Extract valid trials.")
 parser.add_argument('inpath', type=str, help='path of input file.')
 parser.add_argument('outpath', type=str, help='path of output file.')
-parser.add_argument('transform', type=str, help='type of transformation, can be <normalize> or <standardize>.')
+parser.add_argument('--transform', type=str, default = 'standardize', help='type of transformation, can be <normalize> or <standardize> (default).')
 args = parser.parse_args()
 
 # Load the input
