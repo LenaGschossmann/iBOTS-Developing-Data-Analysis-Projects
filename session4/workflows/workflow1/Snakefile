@@ -22,3 +22,77 @@ rule combine_two_arrays:
         array2 = np.load(input[1])
         data = np.concatenate((array1, array2))
         np.save(output[0], data)
+
+rule combine_data:
+    input: 
+        "data/raw/array1.npy",
+        "data/raw/array2.npy"
+    output:
+        "data/processed/combined_data.csv"
+    run:
+        import numpy as np
+        import pandas as pd
+        array1 = np.load(input[0])
+        array2 = np.load(input[1])
+        
+        #data = np.stack((array1, array2), axis=1)
+        #np.savetxt(output[0], data, delimiter=',')
+
+        dict = {'Array1': array1, 'Array2': array2}
+        df = pd.DataFrame(dict)
+        df.to_csv(output[0], index=False)
+        
+
+rule change_csv_to_parquet:
+    input:
+        "data/raw/session.csv"
+    output:
+        "data/processed/session.parquet"
+    run:
+        import pandas as pd
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+        df = pd.read_csv(input[0])
+        # Convert DataFrame to Apache Arrow Table
+        table = pa.Table.from_pandas(df)
+        # Parquet with Brotli compression
+        pq.write_table(table, output[0])
+
+rule standardize_array:
+    input:
+        "data/raw/array.npy"
+    output:
+        "data/processed/array_standardized.npy"
+    run:
+        import numpy as np
+        data = np.load(input[0])
+        std_data = (data-np.mean(data))/np.std(data)
+        np.save(output[0], std_data)
+
+rule normalize_array:
+    input:
+        "data/raw/array.npy"
+    output:
+        "data/processed/array_normalized.npy"
+    shell:
+        "python scripts/normalize_array.py {input[0]} {output[0]}"
+
+rule extract_valid_trials:
+    input:
+        "data/raw/session.csv"
+    output:
+        "data/processed/session_valid.csv"
+    shell:
+        "python scripts/extract_valid_trials.py {input[0]} {output[0]}"
+
+rule split_valid_trials:
+    input:
+        "data/raw/session.csv"
+    output:
+        "data/processed/session_valid.csv",
+        "data/processed/session_not_valid.csv"
+    shell:
+        """
+        python scripts/extract_valid_trials.py {input[0]} {output[0]}
+        python scripts/extract_invalid_trials.py {input[0]} {output[1]}
+        """

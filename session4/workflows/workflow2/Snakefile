@@ -1,0 +1,55 @@
+workdir: "../.." # With this we can specify where should Snakemake look for things relative to this path
+
+## Define the rule all with all final output files as inputs
+#rule all:
+#    input:
+#        "data/processed/array_normalized.npy",
+#        "data/processed/combined_array_normalized.npy"
+
+rule combine_two_arrays:
+    input: 
+        "data/raw/array1.npy",
+        "data/raw/array2.npy"
+    output:
+        "data/processed/combined_array.npy"
+    run:
+        import numpy as np
+        array1 = np.load(input[0])
+        array2 = np.load(input[1])
+        data = np.concatenate((array1, array2))
+        np.save(output[0], data)
+
+rule standardize_array:
+    input:
+        "data/processed/combined_array.npy"
+    output:
+        "data/processed/combined_array_standardized.npy"
+    run:
+        import numpy as np
+        data = np.load(input[0])
+        std_data = (data-np.mean(data))/np.std(data)
+        np.save(output[0], std_data)
+
+rule normalize_array:
+    input:
+        "data/processed/combined_array.npy"
+    output:
+        "data/processed/combined_array_normalized.npy"
+    shell:
+        "python scripts/normalize_array.py {input[0]} {output[0]}"
+
+rule extract_valid_trials:
+    input:
+        "data/raw/session.csv"
+    output:
+        "data/processed/session_valid.csv"
+    shell:
+        "python scripts/extract_valid_trials.py {input[0]} {output[0]}"
+
+rule extract_correct_trials:
+    input:
+        "data/processed/session_valid.csv"
+    output:
+        "data/processed/session_valid_correct_response.csv"
+    shell:
+        "python scripts/extract_correct_trials.py {input[0]} {output[0]}"
