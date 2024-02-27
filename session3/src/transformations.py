@@ -1,19 +1,8 @@
-import numpy as np
+def normalize(data, min_val=0, max_val=1):
 
-def normalize(data, lower=0, upper=1):
-    min_val = min(data)
-    data = np.array(data) - min_val
+    # step 1: normalize between 0 and 1
+    data_nomred = data - data.min()
+    data_normed = data_nomred / data_nomred.max()
 
-    max_val = max(data)
-    data = (data / max_val)
-
-    data = (data + lower) * (upper-lower)
-
-    # or:
-    # [(x-min(data)) / max(data) for x in data]
-
-    return data
-
-
-def standardize(data):
-    return (data - np.mean(data)) / np.std(data)
+    data_normed = data_normed * (max_val - min_val) + min_val
+    return data_normed
