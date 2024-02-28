@@ -1,3 +1,4 @@
+
 ## Scaling up Snakemake workflows with wildcards
 
 One of the benefits of Snakemake as a workflow management system is that it provides an easy way to apply the same workflow as new data comes in. By leveraging wildcards, a feature in Snakemake, we can adapt our existing workflows to process multiple datasets with minimal additional effort.
