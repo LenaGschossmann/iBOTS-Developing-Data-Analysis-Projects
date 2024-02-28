@@ -2,7 +2,8 @@ workdir: "../.."
 
 rule all:
     input:
-        expand("figures/subject_{subject_id}/response_time{session_id}_hist.png", subject_id=['one', 'two'], session_id=[1,2])
+        expand("figures/subject_{subject_id}/response_time{session_id}_hist.png",
+        subject_id=['one', 'two'], session_id=[1,2])
 
 # expand("figures/subject_{subject_id}/response_time{session_id}_hist.png", subject_id=['one', 'two'], session_id=[1,2])
 # expand("data/processed/dataset{session_id}_clean.csv",session_id=[1,2])
@@ -40,7 +41,6 @@ rule make_hist:
         import pandas as pd
         data = np.load(input[0])
         cmp = pd.read_csv(input[1], sep=',', header=0)
-        tmpcol = cmp.loc[cmp['subject_id'] == wildcards.subject_id, 'color']
-        print(tmpcol)
-        #plt.hist(data, color=tmpcol)
-        #plt.savefig(output[0])
+        tmpcol = cmp.loc[cmp['subject_id'] == wildcards.subject_id]['color']
+        plt.hist(data, color=tmpcol)
+        plt.savefig(output[0])
